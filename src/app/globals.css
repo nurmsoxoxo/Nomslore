@@ -1,0 +1,11 @@
+@tailwind base;@tailwind components;@tailwind utilities;
+:root,[data-theme=light]{--bg:#e8dfd5;--bg2:#f2ebe0;--tx:#3a2a20;--mu:#85766a;--pr:#8a4a2b;--ac:#e6d6bb;--bd:#d3c8bc}
+[data-theme=dark]{--bg:#27221f;--bg2:#332c28;--tx:#f0e5d1;--mu:#b6a999;--pr:#c9a46a;--ac:#4b4037;--bd:#4a423c}
+[data-theme=cream]{--bg:#f3e9d6;--bg2:#fbf5e9;--tx:#4a3426;--mu:#8b7661;--pr:#7a4a2e;--ac:#e9d8b6;--bd:#d8c8a9}
+body{background:var(--bg);color:var(--tx);font-family:system-ui,sans-serif}
+.btn{background:var(--pr);color:var(--bg2);padding:.5rem 1rem;border-radius:.375rem;font-weight:600;display:inline-block}
+.btn:disabled{opacity:.5}.btn2{border:1px solid var(--bd);background:var(--bg2);padding:.25rem .6rem;border-radius:.375rem}
+.card{background:var(--bg2);border:1px solid var(--bd);border-radius:.5rem}
+.input{background:var(--bg2);border:1px solid var(--bd);padding:.5rem .75rem;border-radius:.375rem;width:100%}
+.badge{background:var(--ac);color:var(--pr);font-size:.65rem;font-weight:700;padding:0 .35rem;border-radius:.25rem;margin-left:.35rem}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--pr);outline-offset:2px}
