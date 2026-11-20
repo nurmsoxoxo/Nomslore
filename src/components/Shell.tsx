@@ -40,7 +40,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       </header>
       <main className="max-w-6xl mx-auto px-4 py-6 min-h-[70vh]">{children}</main>
       <footer className="mt-10 border-t border-bd bg-bg2 text-mu text-sm py-10 text-center space-y-2">
-        <div className="text-tx flex justify-center"><Logo /></div>
+        <div className="flex justify-center"><Logo full /></div>
         <p className="font-serif italic text-lg text-tx">Discover. Read. Rate. Review.</p>
         <p><Link href="/guidelines" className="underline">Community guidelines</Link></p>
       </footer>

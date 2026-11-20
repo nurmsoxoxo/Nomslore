@@ -30,15 +30,6 @@ export function Row({ title, books }: { title: string; books?: any[] }) {
     </section>
   )
 }
-export const Logo = () => (
-  <span className="inline-flex items-center gap-2.5 select-none">
-    <svg width="38" height="32" viewBox="0 0 40 34" fill="none" aria-hidden="true">
-      <path d="M20 12C15 9 8 9 3 11v20c5-2 12-2 17 1 5-3 12-3 17-1V11c-5-2-12-2-17 1z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" fill="var(--ac)" />
-      <path d="M20 12v20" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M7 16c3-.8 6-.6 10 .8M7 21c3-.8 6-.6 10 .8M33 16c-3-.8-6-.6-10 .8M33 21c-3-.8-6-.6-10 .8" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" opacity=".55" />
-      <path d="M20 1c5 2.5 6.5 7 3 10.5C18.5 10 16.5 5.5 20 1z" fill="var(--pr)" />
-      <path d="M20 3.5v6.5" stroke="var(--bg2)" strokeWidth="1" strokeLinecap="round" />
-    </svg>
-    <span className="font-serif font-bold uppercase leading-none" style={{ letterSpacing: '.24em', fontSize: '1.55rem' }}>Nomslore</span>
-  </span>
+export const Logo = ({ full }: { full?: boolean }) => (
+  <img src={full ? '/logo-full.png' : '/logo.png'} alt="NOMSLORE" className={'logo-img w-auto ' + (full ? 'h-28 md:h-32' : 'h-12 md:h-14')} />
 )
