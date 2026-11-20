@@ -5,8 +5,8 @@ import { cover } from '@/lib/sb'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 export function Card({ b }: { b: any }) {
   return (
-    <Link href={`/book?id=${b.id}`} className="card w-40 shrink-0 snap-start overflow-hidden block">
-      <img src={cover(b.cover_path)} alt={b.title} className="h-56 w-full object-cover bg-ac" loading="lazy" />
+    <Link href={`/book?id=${b.id}`} className="card lift w-40 shrink-0 snap-start overflow-hidden block">
+      <img src={cover(b.cover_path)} alt={b.title} className="book-cover aspect-[2/3] w-full object-cover" loading="lazy" />
       <div className="p-2 text-sm">
         <div className="font-serif font-semibold line-clamp-2">{b.title}</div>
         <div className="text-mu">{b.author_name}{b.author_is_author && <span className="badge">AUTHOR</span>}</div>
@@ -31,7 +31,14 @@ export function Row({ title, books }: { title: string; books?: any[] }) {
   )
 }
 export const Logo = () => (
-  <span className="flex items-center gap-2 font-serif text-xl tracking-widest">
-    <svg width="26" height="22" viewBox="0 0 26 22" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M13 4C10 2 5 2 1 3v15c4-1 9-1 12 1 3-2 8-2 12-1V3c-4-1-9-1-12 1z" /><path d="M13 4v15" /></svg>NOMSLORE
+  <span className="inline-flex items-center gap-2.5 select-none">
+    <svg width="38" height="32" viewBox="0 0 40 34" fill="none" aria-hidden="true">
+      <path d="M20 12C15 9 8 9 3 11v20c5-2 12-2 17 1 5-3 12-3 17-1V11c-5-2-12-2-17 1z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" fill="var(--ac)" />
+      <path d="M20 12v20" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M7 16c3-.8 6-.6 10 .8M7 21c3-.8 6-.6 10 .8M33 16c-3-.8-6-.6-10 .8M33 21c-3-.8-6-.6-10 .8" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" opacity=".55" />
+      <path d="M20 1c5 2.5 6.5 7 3 10.5C18.5 10 16.5 5.5 20 1z" fill="var(--pr)" />
+      <path d="M20 3.5v6.5" stroke="var(--bg2)" strokeWidth="1" strokeLinecap="round" />
+    </svg>
+    <span className="font-serif font-bold uppercase leading-none" style={{ letterSpacing: '.24em', fontSize: '1.55rem' }}>Nomslore</span>
   </span>
 )

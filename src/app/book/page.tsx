@@ -41,7 +41,7 @@ export default function Book() {
   return (
     <>
       <div className="grid md:grid-cols-[240px_1fr] gap-6">
-        <img src={cover(b.cover_path)} alt={b.title} className="w-60 rounded-lg border border-bd" />
+        <img src={cover(b.cover_path)} alt={b.title} className="book-cover w-60 aspect-[2/3] object-cover" />
         <div>
           <h1 className="font-serif text-3xl">{b.title}</h1>
           <p>by <Link className="underline" href={`/author?u=${b.profiles?.username}`}>{b.profiles?.display_name}</Link>{b.profiles?.is_author && <span className="badge">AUTHOR</span>}</p>

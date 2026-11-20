@@ -34,7 +34,7 @@ export default function Read() {
         <button className="btn2" onClick={() => setSize(s => Math.max(14, s - 2))} aria-label="Smaller text"><Minus size={14} /></button><button className="btn2" onClick={() => setSize(s => Math.min(32, s + 2))} aria-label="Larger text"><Plus size={14} /></button>
         <button className="btn2" onClick={() => setDark(!dark)}>{dark ? <Sun size={14} className="inline" /> : <Moon size={14} className="inline" />} {dark ? 'Light page' : 'Dark page'}</button><button className="btn2" onClick={mark}><Bookmark size={14} className="inline" /> Bookmark</button>{msg && <span role="status">{msg}</span>}
       </div>
-      {!ch ? <p>Loading…</p> : <article className="max-w-2xl mx-auto"><h1 className="font-serif text-3xl mb-6">{ch.title}</h1><div className="font-serif whitespace-pre-wrap" style={{ fontSize: size, lineHeight: 1.75 }}>{ch.content}</div>
+      {!ch ? <p>Loading…</p> : <article className="max-w-2xl mx-auto"><h1 className="font-serif text-3xl mb-6">{ch.title}</h1><div className="font-read whitespace-pre-wrap" style={{ fontSize: size, lineHeight: 1.75 }}>{ch.content}</div>
         <div className="flex justify-between mt-10"><button className="btn" disabled={!ch.prev_chapter} onClick={() => setN(ch.prev_chapter)}>Previous</button><span className="text-sm opacity-70">Chapter {ch.chapter_number} of {ch.total_chapters}</span><button className="btn" disabled={!ch.next_chapter} onClick={() => setN(ch.next_chapter)}>Next</button></div></article>}
       {bm.length > 0 && <div className="max-w-2xl mx-auto mt-8 text-sm"><b>Your bookmarks:</b> {bm.map(x => <button key={x.id} className="btn2 mr-2 mt-1" onClick={() => jump(x)}>Ch. {x.chapter_number} · {x.scroll_percent}%</button>)}</div>}
     </div>

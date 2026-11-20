@@ -17,8 +17,9 @@ export default function Home() {
   const surprise = async () => { const { data } = await sb.rpc('random_book'); if (data) location.href = '/book?id=' + data; else alert('No books to discover yet.') }
   return (
     <>
-      <section className={'py-10 md:py-16 max-w-2xl ' + (on('hero') ? '' : 'hidden')}>
-        <h1 className="font-serif text-4xl md:text-6xl leading-tight">Every Story Deserves to Be Discovered.</h1>
+      <section className={'hero ' + (on('hero') ? '' : 'hidden')}>
+        <p className="eyebrow">Discover · Read · Rate · Review</p>
+        <h1 className="font-serif text-5xl md:text-7xl leading-[1.05] font-semibold">Every Story Deserves to Be <em className="text-pr">Discovered.</em></h1>
         <p className="mt-4 text-mu text-lg">Discover remarkable books, explore new authors, and share your thoughts with a community of readers.</p>
         <form className="mt-6 flex gap-2" onSubmit={e => { e.preventDefault(); location.href = '/explore?q=' + encodeURIComponent(q) }}>
           <input className="input" placeholder="Search by title, author or genre" value={q} onChange={e => setQ(e.target.value)} aria-label="Search books" />
