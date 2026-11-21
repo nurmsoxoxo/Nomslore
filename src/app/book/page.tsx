@@ -43,7 +43,7 @@ export default function Book() {
       <div className="grid md:grid-cols-[240px_1fr] gap-6">
         <img src={cover(b.cover_path)} alt={b.title} className="book-cover w-60 aspect-[2/3] object-cover" />
         <div>
-          <h1 className="font-serif text-3xl">{b.title}</h1>
+          <h1 className="font-glow text-3xl md:text-5xl leading-tight">{b.title}</h1>
           <p>by <Link className="underline" href={`/author?u=${b.profiles?.username}`}>{b.profiles?.display_name}</Link>{b.profiles?.is_author && <span className="badge">AUTHOR</span>}</p>
           <p className="text-mu text-sm">{b.book_genres.map((g: any) => g.genres.name).join(', ')} · Published {b.publication_date} · Added {new Date(b.approved_at || b.submitted_at).toLocaleDateString()}</p>
           <p className="my-3 whitespace-pre-line">{b.synopsis}</p>

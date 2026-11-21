@@ -26,7 +26,7 @@ export default function Explore() {
         <label className="text-sm text-mu">Added to<input type="date" className="input" value={f.to} onChange={e => set('to', e.target.value)} /></label>
       </form>
       {busy && !books.length ? <p className="text-mu">Loading…</p> : !books.length ? <p className="text-mu">No books match. Try fewer filters.</p> :
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">{books.map(b => <div key={b.id} className="flex"><Card b={b} /></div>)}</div>}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-5 gap-y-8">{books.map(b => <div key={b.id} className="flex"><Card b={b} fluid /></div>)}</div>}
       {more && <div className="text-center mt-6"><button className="btn" disabled={busy} onClick={() => run(f, books.length)}>Load more</button></div>}
     </>
   )

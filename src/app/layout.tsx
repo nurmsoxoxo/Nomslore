@@ -7,7 +7,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..700;1,9..144,500..700&family=Figtree:wght@400..700&family=Literata:opsz,wght@7..72,400..600&display=swap" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..700&family=Montserrat:wght@500..800&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..600;1,6..96,400..600&family=Oswald:wght@500..700&family=Literata:opsz,wght@7..72,400..600&display=swap" />
         <meta name="theme-color" content="#8f2f10" />
       </head>
       <body><Shell>{children}</Shell></body>
