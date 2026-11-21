@@ -26,13 +26,16 @@ export default function Submit() {
     if (r.error) { setBusy(false); return setMsg(r.error.message) }
     const bid = r.data.id
     const fail = async (m: string) => { await sb.from('books').delete().eq('id', bid); setBusy(false); setMsg(m) }
+    try {
     r = await sb.from('book_genres').insert(sel.map(x => ({ book_id: bid, genre_id: x }))); if (r.error) return fail(r.error.message)
     if (type === 'upload' && ms) {
+      setMsg('Uploading your manuscript. Please keep this page open until it finishes…')
       const mp = `${u.id}/${bid}/${crypto.randomUUID()}-${ms.name.replace(/[^\w.-]/g, '_')}`
       r = await sb.storage.from('manuscripts').upload(mp, ms, { contentType: ms.type || 'text/plain' }); if (r.error) return fail(r.error.message)
       r = await sb.from('book_private').insert({ book_id: bid, manuscript_path: mp, manuscript_filename: ms.name, manuscript_mime: ms.type || 'text/plain', manuscript_size_bytes: ms.size }); if (r.error) return fail(r.error.message)
       r = await sb.from('chapters').insert(chapters.map((c, i) => ({ book_id: bid, chapter_number: i + 1, ...c }))); if (r.error) return fail(r.error.message)
     }
+    } catch (e: any) { return fail(e?.message || 'Upload failed. Please try again.') }
     location.href = '/me'
   }
   if (u === undefined) return <p className="text-mu">Loading…</p>
