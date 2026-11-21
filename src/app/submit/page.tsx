@@ -17,7 +17,7 @@ export default function Submit() {
     if (type === 'external') { if (!/^https:\/\/\S+$/.test(f.url)) return setMsg('Enter a full https:// link.') }
     else {
       if (!ms || !/\.(txt|md|docx|epub)$/i.test(ms.name) || ms.size > 25e6) return setMsg('Manuscript must be a .docx, .epub, .txt or .md file under 25 MB.')
-      chapters = await parseManuscript(ms); if (!chapters.length) return setMsg('No chapters found. Use Heading 1 for each chapter title in DOCX, or a line like "# Chapter One" in TXT/MD.')
+      chapters = await parseManuscript(ms, f.title.trim() || 'Chapter 1'); if (!chapters.length) return setMsg('We could not read any text from that file. Check that it is not empty or password-protected.')
     }
     setBusy(true)
     const cp = `${u.id}/${crypto.randomUUID()}.${cv.type.split('/')[1]}`
@@ -30,9 +30,10 @@ export default function Submit() {
     r = await sb.from('book_genres').insert(sel.map(x => ({ book_id: bid, genre_id: x }))); if (r.error) return fail(r.error.message)
     if (type === 'upload' && ms) {
       setMsg('Uploading your manuscript. Please keep this page open until it finishes…')
+      const mime = /\.docx$/i.test(ms.name) ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' : /\.epub$/i.test(ms.name) ? 'application/epub+zip' : /\.md$/i.test(ms.name) ? 'text/markdown' : 'text/plain'
       const mp = `${u.id}/${bid}/${crypto.randomUUID()}-${ms.name.replace(/[^\w.-]/g, '_')}`
-      r = await sb.storage.from('manuscripts').upload(mp, ms, { contentType: ms.type || 'text/plain' }); if (r.error) return fail(r.error.message)
-      r = await sb.from('book_private').insert({ book_id: bid, manuscript_path: mp, manuscript_filename: ms.name, manuscript_mime: ms.type || 'text/plain', manuscript_size_bytes: ms.size }); if (r.error) return fail(r.error.message)
+      r = await sb.storage.from('manuscripts').upload(mp, ms, { contentType: mime }); if (r.error) return fail(r.error.message)
+      r = await sb.from('book_private').insert({ book_id: bid, manuscript_path: mp, manuscript_filename: ms.name, manuscript_mime: mime, manuscript_size_bytes: ms.size }); if (r.error) return fail(r.error.message)
       r = await sb.from('chapters').insert(chapters.map((c, i) => ({ book_id: bid, chapter_number: i + 1, ...c }))); if (r.error) return fail(r.error.message)
     }
     } catch (e: any) { return fail(e?.message || 'Upload failed. Please try again.') }
@@ -50,7 +51,7 @@ export default function Submit() {
       <label className="text-sm text-mu block">Cover image (JPG, PNG, WebP, max 5 MB)<input type="file" accept="image/jpeg,image/png,image/webp" onChange={e => setCv(e.target.files?.[0] || null)} required /></label>
       <select className="input" value={type} onChange={e => setType(e.target.value)}><option value="external">Link to where it is sold or read (Selar, Amazon…)</option><option value="upload">Upload a free book to read on NOMSLORE</option></select>
       {type === 'external' ? <input className="input" placeholder="https://…" value={f.url} onChange={set('url')} required /> :
-        <label className="text-sm text-mu block">Manuscript (.docx, .epub, .txt or .md, max 25 MB). Use Heading 1 (DOCX) or "# Chapter title" (TXT/MD); EPUB order is kept. Chapters are stored exactly as written.<input type="file" accept=".docx,.epub,.txt,.md" onChange={e => setMs(e.target.files?.[0] || null)} required /></label>}
+        <label className="text-sm text-mu block">Manuscript (.docx, .epub, .txt or .md, max 25 MB). Chapters are found from headings or lines like "Chapter 1". If there are none, your whole text is saved as one chapter, exactly as written.<input type="file" accept=".docx,.epub,.txt,.md" onChange={e => setMs(e.target.files?.[0] || null)} required /></label>}
       <button className="btn w-full" disabled={busy}>{busy ? 'Submitting…' : 'Submit for review'}</button>{msg && <p role="alert" className="text-sm">{msg}</p>}
     </form>
   )

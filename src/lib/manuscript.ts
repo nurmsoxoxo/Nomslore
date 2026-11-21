@@ -1,16 +1,38 @@
 import JSZip from 'jszip'
 export type Chapter = { title: string; content: string }
-const txt = (t: string): Chapter[] => t.split(/^#\s+/m).slice(1).map(p => { const i = p.indexOf('\n'); return { title: p.slice(0, i < 0 ? p.length : i).trim(), content: (i < 0 ? '' : p.slice(i + 1)).trim() } }).filter(c => c.title && c.content)
+const WORDS = 'one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty'
+const CH = new RegExp('^\\s*((chapter|part|book|section)\\s+([0-9]{1,3}|[ivxlc]{1,6}|' + WORDS + ')\\b[^\\n]{0,70}|(prologue|epilogue|interlude)\\b[^\\n]{0,40})\\s*$', 'i')
+// Finds chapters from "# Title" lines or "Chapter 1"-style lines. With none, the whole text becomes one chapter.
+function split(text: string, title: string): Chapter[] {
+  const lines = text.replace(/\r\n?/g, '\n').split('\n')
+  const md = lines.some(l => /^#\s+\S/.test(l))
+  const isHead = (l: string) => (md ? /^#\s+\S/.test(l) : CH.test(l))
+  const heads: string[] = [], bodies: string[][] = [[]]
+  for (const l of lines) { if (isHead(l)) { heads.push(l.replace(/^#\s+/, '').trim().slice(0, 300)); bodies.push([]) } else bodies[bodies.length - 1].push(l) }
+  const pre = bodies[0].join('\n').trim()
+  if (!heads.length) return pre ? [{ title, content: pre }] : []
+  const out: Chapter[] = []
+  if (pre.length > 120) out.push({ title: 'Beginning', content: pre })
+  heads.forEach((h, i) => { const c = bodies[i + 1].join('\n').trim(); if (h && c) out.push({ title: h, content: c }) })
+  return out
+}
 const xml = (s: string, t: any = 'application/xml') => new DOMParser().parseFromString(s, t)
-async function docx(f: File): Promise<Chapter[]> {
+async function docx(f: File, title: string): Promise<Chapter[]> {
   const z = await JSZip.loadAsync(await f.arrayBuffer()); const x = z.file('word/document.xml'); if (!x) return []
-  const d = xml(await x.async('string')); const out: Chapter[] = []; let cur: Chapter | null = null
+  const d = xml(await x.async('string')); const paras: { st: string; t: string }[] = []
   for (const p of Array.from(d.getElementsByTagName('w:p'))) {
     const st = p.getElementsByTagName('w:pStyle')[0]?.getAttribute('w:val') || ''
     const t = Array.from(p.getElementsByTagName('w:t')).map(n => n.textContent).join('').trim()
-    if (/^heading ?1$/i.test(st)) { if (t) { cur = { title: t, content: '' }; out.push(cur) } } else if (cur && t) cur.content += (cur.content ? '\n\n' : '') + t
+    if (t) paras.push({ st, t })
   }
-  return out.filter(c => c.content)
+  for (const lvl of ['1', '2']) {
+    const re = new RegExp('^heading ?' + lvl + '$', 'i')
+    if (!paras.some(p => re.test(p.st))) continue
+    const out: Chapter[] = []; let cur: Chapter | null = null
+    for (const p of paras) { if (re.test(p.st)) { cur = { title: p.t.slice(0, 300), content: '' }; out.push(cur) } else if (cur) cur.content += (cur.content ? '\n\n' : '') + p.t }
+    const r = out.filter(c => c.content); if (r.length) return r
+  }
+  return split(paras.map(p => p.t).join('\n\n'), title)
 }
 async function epub(f: File): Promise<Chapter[]> {
   const z = await JSZip.loadAsync(await f.arrayBuffer()); const c = z.file('META-INF/container.xml'); if (!c) return []
@@ -28,7 +50,7 @@ async function epub(f: File): Promise<Chapter[]> {
   }
   return out
 }
-export async function parseManuscript(f: File): Promise<Chapter[]> {
+export async function parseManuscript(f: File, title = 'Chapter 1'): Promise<Chapter[]> {
   const n = f.name.toLowerCase()
-  return n.endsWith('.docx') ? docx(f) : n.endsWith('.epub') ? epub(f) : txt(await f.text())
+  return n.endsWith('.docx') ? docx(f, title) : n.endsWith('.epub') ? epub(f) : split(await f.text(), title)
 }

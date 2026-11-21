@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { sb, useUser } from '@/lib/sb'
 import { Row } from '@/components/ui'
+import { BookOpen } from 'lucide-react'
 export default function Home() {
   const u = useUser()
   const [d, setD] = useState<any>({}), [q, setQ] = useState(''), [sec, setSec] = useState<any>({})
@@ -38,7 +39,7 @@ export default function Home() {
       {u && on('recently_viewed') && <Row title="Recently Viewed" books={d.v} />}
       <section className={'my-8 ' + (on('book_of_the_week') ? '' : 'hidden')}><h2 className="font-serif text-2xl mb-3">Book of the Week</h2>
         {d.w && d.w[0] ? <Row title="" books={d.w} /> : <p className="text-mu text-sm">Not chosen yet.</p>}</section>
-      <section className={'my-8 card p-6 text-center ' + (on('surprise_me') ? '' : 'hidden')}><h2 className="font-disc italic text-4xl text-pr">Surprise Me</h2><p className="text-mu mb-3">Let NOMSLORE pick something for you.</p><button className="btn-pill" onClick={surprise}>Surprise me</button></section>
+      <section className={'my-8 card p-6 text-center relative overflow-hidden ' + (on('surprise_me') ? '' : 'hidden')}><BookOpen aria-hidden="true" size={120} strokeWidth={1} className="absolute -right-5 -bottom-7 text-pr opacity-[.09] pointer-events-none" /><h2 className="font-disc italic text-4xl text-pr">Surprise Me</h2><p className="text-mu mb-3">Let NOMSLORE pick something for you.</p><button className="btn-pill" onClick={surprise}>Surprise me</button></section>
     </>
   )
 }
