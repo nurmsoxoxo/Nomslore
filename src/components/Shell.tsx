@@ -54,10 +54,10 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       </header>
       <main className="max-w-6xl mx-auto px-4 py-6 min-h-[70vh]">{children}</main>
       <footer className="mt-14 border-t border-bd bg-bg2">
-        <div className="max-w-6xl mx-auto px-4 py-10 grid gap-8 md:grid-cols-[1.4fr_1fr_1fr]">
-          <div><Logo full /><p className="font-disc italic text-xl mt-3 text-pr">Discover. Read. Rate. Review.</p></div>
-          <div><h3 className="font-serif mb-3">Explore</h3><ul className="space-y-2 text-sm"><li><Link href="/explore">Explore books</Link></li>{u && <li><Link href="/submit">Submit a book</Link></li>}{u && <li><Link href="/me">My shelf</Link></li>}</ul></div>
-          <div><h3 className="font-serif mb-3">Community</h3><ul className="space-y-2 text-sm"><li><Link href="/guidelines">Community guidelines</Link></li></ul></div>
+        <div className="max-w-6xl mx-auto px-4 pt-10 pb-4 flex flex-col items-center text-center gap-3">
+          <Logo full />
+          <p className="font-disc italic text-xl text-pr">Discover. Read. Rate. Review.</p>
+          <Link href="/guidelines" className="text-sm underline">Community guidelines</Link>
         </div>
         <div className="orn" aria-hidden="true">❦</div>
       </footer>
