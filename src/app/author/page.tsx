@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { sb, useUser, qs } from '@/lib/sb'
 import { Row } from '@/components/ui'
+const pub = (path: string) => sb.storage.from('avatars').getPublicUrl(path).data.publicUrl
 export default function Author() {
   const me = useUser()
   const [p, setP] = useState<any>(), [books, setBooks] = useState<any[]>(), [top, setTop] = useState<any[]>(), [s, setS] = useState<any>({}), [fol, setFol] = useState(false), [fav, setFav] = useState<any[]>([]), [rat, setRat] = useState<any[]>([]), [msg, setMsg] = useState('')
@@ -27,12 +28,12 @@ export default function Author() {
   const L = ({ x }: { x: any }) => x ? <Link className="underline" href={`/book?id=${x.id}`}>{x.title}</Link> : null
   return (
     <>
-      {p.banner_path && <img src={sb.storage.from('avatars').getPublicUrl(p.banner_path).data.publicUrl} alt="" className="w-full h-32 md:h-48 object-cover rounded-md border border-bd mb-4" />}
-      <div className="flex gap-4 items-center">
-        {p.avatar_path ? <img src={sb.storage.from('avatars').getPublicUrl(p.avatar_path).data.publicUrl} alt="" className="w-24 h-24 md:w-28 md:h-28 shrink-0 aspect-square rounded-full object-cover border-2 border-sand" /> : <div className="w-24 h-24 md:w-28 md:h-28 shrink-0 aspect-square rounded-full bg-ac grid place-items-center font-serif text-3xl">{p.display_name[0]}</div>}
-        <div><h1 className="font-serif text-3xl">{p.display_name}{p.is_author && <span className="badge">AUTHOR</span>}</h1><p className="text-mu">@{p.username}</p>
+      {p.banner_path ? <img src={pub(p.banner_path)} alt="" className="w-full h-36 md:h-52 object-cover rounded-md border border-bd" /> : <div className="w-full h-36 md:h-52 rounded-md border border-bd" style={{ background: 'linear-gradient(120deg,var(--ac),var(--sand))' }} />}
+      <div className="flex gap-4 items-start px-3 md:px-6 -mt-12 md:-mt-14">
+        {p.avatar_path ? <img src={pub(p.avatar_path)} alt="" className="w-24 h-24 md:w-28 md:h-28 shrink-0 aspect-square rounded-full object-cover border-4 border-bg" /> : <div className="w-24 h-24 md:w-28 md:h-28 shrink-0 aspect-square rounded-full bg-ac border-4 border-bg grid place-items-center font-serif text-3xl">{p.display_name[0]}</div>}
+        <div className="min-w-0 pt-14 md:pt-16"><h1 className="font-serif text-3xl">{p.display_name}{p.is_author && <span className="badge">AUTHOR</span>}</h1><p className="text-mu">@{p.username}</p>
           {p.is_author && <p className="text-sm mt-1">{s.follower_count ?? 0} followers · {s.book_count ?? 0} books · ★ {s.avg_rating ?? '–'} avg ({s.rating_count ?? 0} ratings)</p>}</div>
-        {p.is_author && me?.id !== p.id && <button className="btn ml-auto" onClick={toggle}>{fol ? 'Following' : 'Follow'}</button>}
+        {p.is_author && me?.id !== p.id && <button className="btn ml-auto mt-14 md:mt-16 shrink-0" onClick={toggle}>{fol ? 'Following' : 'Follow'}</button>}
       </div>
       {msg && <p role="alert" className="text-sm mt-2">{msg}</p>}{p.bio && <p className="mt-4 max-w-2xl whitespace-pre-line">{p.bio}</p>}
       {p.is_author && <Row title="Published books" books={books} />}

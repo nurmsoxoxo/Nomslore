@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { sb, useUser } from '@/lib/sb'
-import { Logo } from './ui'
+import { Logo, Deco } from './ui'
 import { LogOut, Menu, Search, X } from 'lucide-react'
 const MAP: any = { 'autumn-light': 'light', 'autumn-dark': 'dark', 'autumn-cream': 'cream' }
 export default function Shell({ children }: { children: React.ReactNode }) {
@@ -53,7 +53,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         )}
       </header>
       <main className="max-w-6xl mx-auto px-4 py-6 min-h-[70vh]">{children}</main>
-      <footer className="mt-14 border-t border-bd bg-bg2">
+      <footer className="mt-14 border-t border-bd bg-bg2 relative overflow-hidden"><Deco name="feather" size={96} className="-left-3 top-2" /><Deco name="book" size={96} className="-right-3 bottom-0" />
         <div className="max-w-6xl mx-auto px-4 pt-10 pb-4 flex flex-col items-center text-center gap-3">
           <Logo full />
           <p className="font-disc italic text-xl text-pr">Discover. Read. Rate. Review.</p>

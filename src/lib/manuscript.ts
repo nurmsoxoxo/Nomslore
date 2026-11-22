@@ -50,7 +50,46 @@ async function epub(f: File): Promise<Chapter[]> {
   }
   return out
 }
+const loadScript = (src: string) => new Promise<void>((res, rej) => { const el = document.createElement('script'); el.src = src; el.onload = () => res(); el.onerror = () => rej(new Error('Could not load the PDF reader. Check your connection and try again.')); document.head.appendChild(el) })
+async function pdf(f: File, title: string): Promise<Chapter[]> {
+  const w: any = window, V = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/'
+  if (!w.pdfjsLib) await loadScript(V + 'pdf.min.js')
+  w.pdfjsLib.GlobalWorkerOptions.workerSrc = V + 'pdf.worker.min.js'
+  const doc = await w.pdfjsLib.getDocument({ data: new Uint8Array(await f.arrayBuffer()) }).promise
+  const pages: string[] = []
+  for (let n = 1; n <= doc.numPages; n++) {
+    const tc = await (await doc.getPage(n)).getTextContent(); let last: number | null = null, out = ''
+    for (const it of tc.items as any[]) { const y = it.transform[5]; if (last !== null && Math.abs(y - last) > 2) out += Math.abs(y - last) > 20 ? '\n\n' : ' '; out += it.str; last = y }
+    pages.push(out)
+  }
+  return split(pages.join('\n\n'), title)
+}
+async function odt(f: File, title: string): Promise<Chapter[]> {
+  const z = await JSZip.loadAsync(await f.arrayBuffer()); const x = z.file('content.xml'); if (!x) return []
+  const d = xml(await x.async('string')); const lines: string[] = []
+  for (const e of Array.from(d.getElementsByTagName('*'))) {
+    const t = (e.textContent || '').trim(); if (!t) continue
+    if (e.nodeName === 'text:h' && Number(e.getAttribute('text:outline-level') || 1) <= 2) lines.push('# ' + t)
+    else if (e.nodeName === 'text:p' && !e.closest('table-cell')) lines.push(t)
+  }
+  return split(lines.join('\n\n'), title)
+}
+const rtf = (t: string) => t.replace(/\{\\(fonttbl|colortbl|stylesheet|info|pict)[\s\S]*?\}\s*\}/g, '').replace(/\{\\\*[^{}]*\}/g, '').replace(/\\par[d]?/g, '\n').replace(/\\'([0-9a-f]{2})/gi, (_m, h) => String.fromCharCode(parseInt(h, 16))).replace(/\\u(-?\d+)\??/g, (_m, n) => String.fromCharCode(+n < 0 ? +n + 65536 : +n)).replace(/\\[a-z]+-?\d* ?/gi, '').replace(/[{}]/g, '').replace(/\n{3,}/g, '\n\n')
+const html = (t: string) => {
+  const d = new DOMParser().parseFromString(t, 'text/html'); d.querySelectorAll('script,style').forEach(e => e.remove())
+  d.querySelectorAll('h1,h2').forEach(e => { e.textContent = '\n\n# ' + (e.textContent || '').trim() + '\n\n' })
+  d.querySelectorAll('p,div,li,br,h3,h4,h5,h6').forEach(e => e.append('\n\n')); return d.body.textContent || ''
+}
+// Accepts almost anything: PDF, Word, EPUB, ODT, RTF, HTML, Markdown, plain text, or any other readable text file.
 export async function parseManuscript(f: File, title = 'Chapter 1'): Promise<Chapter[]> {
-  const n = f.name.toLowerCase()
-  return n.endsWith('.docx') ? docx(f, title) : n.endsWith('.epub') ? epub(f) : split(await f.text(), title)
+  const ext = (f.name.split('.').pop() || '').toLowerCase()
+  if (ext === 'docx') return docx(f, title)
+  if (ext === 'epub') return epub(f)
+  if (ext === 'pdf') return pdf(f, title)
+  if (ext === 'odt') return odt(f, title)
+  const t = await f.text()
+  if (ext === 'rtf') return split(rtf(t), title)
+  if (ext === 'html' || ext === 'htm' || ext === 'xhtml') return split(html(t), title)
+  const bad = (t.match(/[\u0000-\u0008\u000e-\u001f\ufffd]/g) || []).length
+  return bad > t.length * 0.02 ? [] : split(t, title)
 }

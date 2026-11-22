@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { sb, qs } from '@/lib/sb'
-import { Card } from '@/components/ui'
+import { Card, Deco } from '@/components/ui'
 const PAGE = 24
 export default function Explore() {
   const [f, setF] = useState<any>({ q: '', genre: '', min: '', sort: 'recent', from: '', to: '' })
@@ -15,7 +15,7 @@ export default function Explore() {
   const set = (k: string, v: string) => { const x = { ...f, [k]: v }; setF(x); if (k !== 'q') run(x); else if (v.length > 1) sb.rpc('search_suggestions', { p_query: v }).then(r => setSug(r.data || [])); else setSug([]) }
   return (
     <>
-      <h1 className="font-serif text-3xl mb-4">Explore Books</h1>
+      <div className="relative"><h1 className="font-serif text-3xl mb-4">Explore Books</h1><Deco name="library" size={84} className="-top-4 right-0" /></div>
       <form className="grid sm:grid-cols-3 lg:grid-cols-6 gap-2 mb-6" onSubmit={e => { e.preventDefault(); setSug([]); run(f) }}>
         <div className="sm:col-span-2"><input className="input" list="sg" placeholder="Title, author or genre" value={f.q} onChange={e => set('q', e.target.value)} /><datalist id="sg">{sug.map((s, i) => <option key={i} value={s.label} />)}</datalist></div>
         <select className="input" value={f.genre} onChange={e => set('genre', e.target.value)}><option value="">All genres</option>{genres.map(g => <option key={g.slug} value={g.slug}>{g.name}</option>)}</select>

@@ -2,7 +2,9 @@
 import Link from 'next/link'
 import { useRef } from 'react'
 import { cover } from '@/lib/sb'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { BookOpen, Bookmark, ChevronLeft, ChevronRight, Feather, Library } from 'lucide-react'
+const ICONS: any = { book: BookOpen, feather: Feather, bookmark: Bookmark, library: Library }
+export const Deco = ({ name = 'book', size = 110, className = '' }: { name?: string; size?: number; className?: string }) => { const I = ICONS[name] || BookOpen; return <I aria-hidden="true" size={size} strokeWidth={1} className={'absolute pointer-events-none text-pr opacity-[.08] ' + className} /> }
 export function Card({ b, fluid }: { b: any; fluid?: boolean }) {
   return (
     <Link href={`/book?id=${b.id}`} className={'bookcard block ' + (fluid ? 'w-full' : 'w-40 sm:w-44 shrink-0 snap-start')}>
@@ -23,7 +25,7 @@ export function Row({ title, books }: { title: string; books?: any[] }) {
         {title ? <h2 className="font-serif">{title}</h2> : <span />}
         <div className="flex gap-1"><button className="btn2 !p-2" aria-label="Scroll left" onClick={() => go(-1)}><ChevronLeft size={18} /></button><button className="btn2 !p-2" aria-label="Scroll right" onClick={() => go(1)}><ChevronRight size={18} /></button></div>
       </div>
-      {!books ? <p className="text-mu text-sm">Loading…</p> : !books.length ? <p className="empty">Nothing here yet. Approved books will appear here.</p> :
+      {!books ? <p className="text-mu text-sm">Loading…</p> : !books.length ? <p className="empty"><BookOpen aria-hidden="true" size={26} strokeWidth={1.25} className="mx-auto mb-2 opacity-30" />Nothing here yet. Approved books will appear here.</p> :
         <div ref={r} className="flex gap-5 overflow-x-auto snap-x pb-3">{books.map(b => <Card key={b.id} b={b} />)}</div>}
     </section>
   )
