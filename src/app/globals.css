@@ -46,3 +46,4 @@ a:focus-visible,button:focus-visible,select:focus-visible,textarea:focus-visible
 .btn-pill:hover,.hero .btn:hover{transform:translateY(-1px);box-shadow:0 12px 20px -8px rgb(var(--sh)/.75);background:linear-gradient(180deg,var(--pr),var(--pr2))}
 [data-theme=dark] .btn-pill,[data-theme=dark] .hero .btn{color:#1d0d08}
 .hero .btn2{border:1px solid var(--bd);background:var(--bg2);padding:.3rem .85rem;border-radius:999px}
+.ribbon{position:absolute;top:-5px;right:16px;width:22px;height:48px;background:linear-gradient(180deg,var(--leaf),var(--pr2));clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%);opacity:.92;pointer-events:none}

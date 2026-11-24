@@ -8,12 +8,12 @@ import { Heart, Star, BookOpen, ExternalLink } from 'lucide-react'
 export default function Book() {
   const u = useUser()
   const [id, setId] = useState<string | null>(null), [b, setB] = useState<any>(), [cm, setCm] = useState<any[]>([]), [sim, setSim] = useState<any[]>()
-  const [my, setMy] = useState<any>({}), [msg, setMsg] = useState(''), [txt, setTxt] = useState(''), [sp, setSp] = useState(false), [rt, setRt] = useState<string | null>(null), [shown, setShown] = useState<any>({})
+  const [my, setMy] = useState<any>({}), [msg, setMsg] = useState(''), [txt, setTxt] = useState(''), [sp, setSp] = useState(false), [rt, setRt] = useState<string | null>(null), [shown, setShown] = useState<any>({}), [lerr, setLerr] = useState('')
   useEffect(() => { setId(qs('id')) }, [])
   const load = useCallback(async () => {
     if (!id) return
-    const r = await sb.from('books').select('*,profiles(username,display_name,is_author),book_genres(genres(name))').eq('id', id).maybeSingle()
-    setB(r.data || null)
+    const r = await sb.from('books').select('*,profiles:profiles!books_author_id_fkey(username,display_name,is_author),book_genres(genres(name))').eq('id', id).maybeSingle()
+    setB(r.data || null); setLerr(r.error?.message || '')
     sb.from('comments').select('*,profiles:profiles!comments_user_id_fkey(username,display_name,is_author)').eq('book_id', id).order('created_at').then(x => setCm(x.data || []))
     if (u) {
       const [a, l, f] = await Promise.all([sb.from('ratings').select('score').eq('book_id', id).eq('user_id', u.id).maybeSingle(), sb.from('likes').select('book_id').eq('book_id', id).eq('user_id', u.id).maybeSingle(), sb.from('favourites').select('book_id').eq('book_id', id).eq('user_id', u.id).maybeSingle()])
@@ -29,7 +29,7 @@ export default function Book() {
   const post = (e: any) => { e.preventDefault(); if (need() || !txt.trim()) return; act(sb.from('comments').insert({ book_id: id, user_id: u.id, body: txt.trim(), has_spoilers: sp, parent_id: rt })); setTxt(''); setRt(null); setSp(false) }
   const report = async (cid: string) => { if (need()) return; const { error } = await sb.from('reports').insert({ reporter_id: u.id, kind: 'comment', comment_id: cid, reason: 'inappropriate' }); setMsg(error ? (error.code === '23505' ? 'You already reported this.' : error.message) : 'Report sent. Thank you.') }
   if (b === undefined) return <p className="text-mu">Loading…</p>
-  if (!b) return <p>This book is not available.</p>
+  if (!b) return <p>This book is not available.{lerr && <span className="block text-sm text-mu mt-1">{lerr}</span>}</p>
   const tops = cm.filter(c => !c.parent_id)
   const Item = ({ c }: { c: any }) => (
     <div className="card p-3">
@@ -41,7 +41,7 @@ export default function Book() {
   return (
     <>
       <div className="grid md:grid-cols-[240px_1fr] gap-6">
-        <img src={cover(b.cover_path)} alt={b.title} className="book-cover w-60 aspect-[2/3] object-cover" />
+        <div className="relative w-60"><img src={cover(b.cover_path)} alt={b.title} className="book-cover w-full aspect-[2/3] object-cover" /><span className="ribbon" aria-hidden="true" /></div>
         <div>
           <h1 className="font-glow text-3xl md:text-5xl leading-tight">{b.title}</h1>
           <p>by <Link className="underline" href={`/author?u=${b.profiles?.username}`}>{b.profiles?.display_name}</Link>{b.profiles?.is_author && <span className="badge">AUTHOR</span>}</p>

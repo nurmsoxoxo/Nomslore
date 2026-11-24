@@ -4,7 +4,7 @@ import { sb } from '@/lib/sb'
 export default function Reviews({ bookId, authorId, user }: any) {
   const [rv, setRv] = useState<any[]>([]), [sc, setSc] = useState<any>({}), [txt, setTxt] = useState(''), [sp, setSp] = useState(false), [msg, setMsg] = useState(''), [shown, setShown] = useState<any>({})
   const load = useCallback(async () => {
-    const [a, b] = await Promise.all([sb.from('reviews').select('*,profiles(username,display_name,is_author)').eq('book_id', bookId).order('created_at', { ascending: false }), sb.from('ratings').select('user_id,score').eq('book_id', bookId)])
+    const [a, b] = await Promise.all([sb.from('reviews').select('*,profiles:profiles!reviews_user_id_fkey(username,display_name,is_author)').eq('book_id', bookId).order('created_at', { ascending: false }), sb.from('ratings').select('user_id,score').eq('book_id', bookId)])
     setRv(a.data || []); setSc(Object.fromEntries((b.data || []).map((x: any) => [x.user_id, x.score])))
   }, [bookId])
   useEffect(() => { load() }, [load])

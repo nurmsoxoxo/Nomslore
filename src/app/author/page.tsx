@@ -13,8 +13,8 @@ export default function Author() {
     sb.from('book_cards').select('*').eq('author_id', id).order('approved_at', { ascending: false }).then(x => setBooks(x.data || []))
     sb.from('book_cards').select('*').eq('author_id', id).order('rating_count', { ascending: false }).order('like_count', { ascending: false }).order('view_count', { ascending: false }).limit(8).then(x => setTop(x.data || []))
     sb.rpc('get_author_stats', { p_author: id }).then(x => setS(x.data?.[0] || {}))
-    sb.from('favourites').select('books(id,title)').eq('user_id', id).then(x => setFav(x.data || []))
-    sb.from('ratings').select('score,books(id,title)').eq('user_id', id).order('created_at', { ascending: false }).limit(30).then(x => setRat(x.data || []))
+    sb.from('favourites').select('books:books!favourites_book_id_fkey(id,title)').eq('user_id', id).then(x => setFav(x.data || []))
+    sb.from('ratings').select('score,books:books!ratings_book_id_fkey(id,title)').eq('user_id', id).order('created_at', { ascending: false }).limit(30).then(x => setRat(x.data || []))
   }
   useEffect(() => { load() }, [])
   useEffect(() => { if (me && p) sb.from('author_follows').select('author_id').eq('follower_id', me.id).eq('author_id', p.id).maybeSingle().then(x => setFol(!!x.data)) }, [me?.id, p?.id])
@@ -28,12 +28,12 @@ export default function Author() {
   const L = ({ x }: { x: any }) => x ? <Link className="underline" href={`/book?id=${x.id}`}>{x.title}</Link> : null
   return (
     <>
-      {p.banner_path ? <img src={pub(p.banner_path)} alt="" className="w-full h-36 md:h-52 object-cover rounded-md border border-bd" /> : <div className="w-full h-36 md:h-52 rounded-md border border-bd" style={{ background: 'linear-gradient(120deg,var(--ac),var(--sand))' }} />}
-      <div className="flex gap-4 items-start px-3 md:px-6 -mt-12 md:-mt-14">
-        {p.avatar_path ? <img src={pub(p.avatar_path)} alt="" className="w-24 h-24 md:w-28 md:h-28 shrink-0 aspect-square rounded-full object-cover border-4 border-bg" /> : <div className="w-24 h-24 md:w-28 md:h-28 shrink-0 aspect-square rounded-full bg-ac border-4 border-bg grid place-items-center font-serif text-3xl">{p.display_name[0]}</div>}
-        <div className="min-w-0 pt-14 md:pt-16"><h1 className="font-serif text-3xl">{p.display_name}{p.is_author && <span className="badge">AUTHOR</span>}</h1><p className="text-mu">@{p.username}</p>
+      {p.banner_path ? <img src={pub(p.banner_path)} alt="" className="w-full aspect-[3.4/1] object-cover rounded-lg border border-bd" /> : <div className="w-full aspect-[3.4/1] rounded-lg border border-bd" style={{ background: 'linear-gradient(120deg,var(--ac),var(--sand))' }} />}
+      <div className="flex gap-4 items-start mt-4">
+        {p.avatar_path ? <img src={pub(p.avatar_path)} alt="" className="w-24 h-24 md:w-28 md:h-28 shrink-0 aspect-square rounded-full object-cover border-2 border-sand" /> : <div className="w-24 h-24 md:w-28 md:h-28 shrink-0 aspect-square rounded-full bg-ac border-2 border-sand grid place-items-center font-serif text-3xl">{p.display_name[0]}</div>}
+        <div className="min-w-0 pt-1"><h1 className="font-serif text-3xl">{p.display_name}{p.is_author && <span className="badge">AUTHOR</span>}</h1><p className="text-mu">@{p.username}</p>
           {p.is_author && <p className="text-sm mt-1">{s.follower_count ?? 0} followers · {s.book_count ?? 0} books · ★ {s.avg_rating ?? '–'} avg ({s.rating_count ?? 0} ratings)</p>}</div>
-        {p.is_author && me?.id !== p.id && <button className="btn ml-auto mt-14 md:mt-16 shrink-0" onClick={toggle}>{fol ? 'Following' : 'Follow'}</button>}
+        {p.is_author && me?.id !== p.id && <button className="btn ml-auto mt-1 shrink-0" onClick={toggle}>{fol ? 'Following' : 'Follow'}</button>}
       </div>
       {msg && <p role="alert" className="text-sm mt-2">{msg}</p>}{p.bio && <p className="mt-4 max-w-2xl whitespace-pre-line">{p.bio}</p>}
       {p.is_author && <Row title="Published books" books={books} />}
